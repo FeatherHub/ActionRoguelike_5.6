@@ -1,7 +1,7 @@
 ﻿#include "RogueActionSystemComponent.h"
 
 #include "RogueActionBase.h"
-
+#include "GameplayTagContainer.h"
 
 URogueActionSystemComponent::URogueActionSystemComponent()
 {
@@ -27,7 +27,7 @@ void URogueActionSystemComponent::GrantAction(URogueActionBase* Action)
 	GrantedActions.Add(Action);
 }
 
-void URogueActionSystemComponent::StartAction(FName ActionName)
+void URogueActionSystemComponent::StartAction(FGameplayTag ActionName)
 {
 	for (URogueActionBase* Action : GrantedActions)
 	{
@@ -41,10 +41,10 @@ void URogueActionSystemComponent::StartAction(FName ActionName)
 		}
 	}
 	
-	UE_LOGFMT(LogTemp, Warning, "Failed to Start Action '{ActionName}'", ActionName);
+	UE_LOGFMT(LogTemp, Warning, "Failed to Start Action '{ActionName}'", ActionName.GetTagName());
 }
 
-void URogueActionSystemComponent::StopAction(FName ActionName)
+void URogueActionSystemComponent::StopAction(FGameplayTag ActionName)
 {
 	for (URogueActionBase* Action : GrantedActions)
 	{
@@ -58,7 +58,7 @@ void URogueActionSystemComponent::StopAction(FName ActionName)
 		}
 	}
 	
-	UE_LOGFMT(LogTemp, Warning, "Failed to Stop Action '{ActionName}'", ActionName);
+	UE_LOGFMT(LogTemp, Warning, "Failed to Stop Action '{ActionName}'", ActionName.GetTagName());
 }
 
 bool URogueActionSystemComponent::ApplyHealthChange(float InHealthDelta)

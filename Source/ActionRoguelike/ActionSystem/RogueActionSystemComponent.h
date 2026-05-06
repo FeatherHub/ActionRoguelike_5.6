@@ -7,6 +7,7 @@
 
 class URogueActionBase;
 class URogueActionSystemComponent;
+struct FGameplayTag;
 
 USTRUCT(Blueprintable)
 struct FAttributeSet
@@ -51,8 +52,8 @@ public:
 	URogueActionSystemComponent();
 	virtual void InitializeComponent() override;
 	
-	void StartAction(FName ActionName);
-	void StopAction(FName ActionName);
+	void StartAction(FGameplayTag ActionName);
+	void StopAction(FGameplayTag ActionName);
 	
 	void GrantAction(URogueActionBase* Action);
 	

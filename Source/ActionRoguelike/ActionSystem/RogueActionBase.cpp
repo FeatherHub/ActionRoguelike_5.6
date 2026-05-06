@@ -10,7 +10,7 @@ void URogueActionBase::StartAction_Implementation()
 	float CurrentTime = GetWorld()->TimeSeconds;
 	CooldownEndTime = CurrentTime + CooldownTime;
 	
-	UE_LOGFMT(LogTemp, Log, "Start Action '{ActionName}' at {GameTime}", ActionName, CurrentTime);
+	UE_LOGFMT(LogTemp, Log, "Start Action '{ActionName}' at {GameTime}", ActionName.GetTagName(), CurrentTime);
 }
 
 void URogueActionBase::StopAction_Implementation()
@@ -18,14 +18,14 @@ void URogueActionBase::StopAction_Implementation()
 	bIsRunning = false;
 	
 	float GameTime = GetWorld()->TimeSeconds;
-	UE_LOGFMT(LogTemp, Log, "Stop Action '{ActionName}' at {GameTime}", ActionName, GameTime);
+	UE_LOGFMT(LogTemp, Log, "Stop Action '{ActionName}' at {GameTime}", ActionName.GetTagName(), GameTime);
 }
 
 bool URogueActionBase::CanStart() const
 {
 	if (IsRunning())
 	{
-		UE_LOGFMT(LogTemp, Warning, "Cannot Start Action {ActionName}. Because it is in running", ActionName);
+		UE_LOGFMT(LogTemp, Warning, "Cannot Start Action {ActionName}. Because it is in running", ActionName.GetTagName());
 		return false;
 	}
 	
@@ -33,7 +33,7 @@ bool URogueActionBase::CanStart() const
 	if (CooldownRemaining > 0.f)
 	{
 		UE_LOGFMT(LogTemp, Warning, "Cannot Start Action {ActionName}. Because Cooldown remains: {CooldownRemaining}"
-			, ActionName, CooldownRemaining);
+			, ActionName.GetTagName(), CooldownRemaining);
 		return false;
 	}
 
@@ -44,7 +44,7 @@ bool URogueActionBase::CanStop() const
 {
 	if (!IsRunning())
 	{
-		UE_LOGFMT(LogTemp, Error, "Cannot Stop Action {ActionName}. Becuase it is not in running.", ActionName);
+		UE_LOGFMT(LogTemp, Error, "Cannot Stop Action {ActionName}. Becuase it is not in running.", ActionName.GetTagName());
 		return false;	
 	}
 	

@@ -3,7 +3,9 @@
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "EnhancedInputComponent.h"
+#include "GameplayTagContainer.h"
 #include "ActionSystem/RogueActionSystemComponent.h"
+#include "Core/RogueGameplayTag.h"
 #include "GameFramework/PawnMovementComponent.h"
 
 ARoguePlayerCharacter::ARoguePlayerCharacter()
@@ -38,11 +40,12 @@ void ARoguePlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInp
 	EIC->BindAction(IA_Move, ETriggerEvent::Triggered, this, &ThisClass::Move);
 	EIC->BindAction(IA_Look, ETriggerEvent::Triggered, this, &ThisClass::Look);
 	EIC->BindAction(IA_Jump, ETriggerEvent::Triggered, this, &ThisClass::Jump);
-	EIC->BindAction(IA_Sprint, ETriggerEvent::Started, this, &ThisClass::StartAction, FName(TEXT("Sprint")));
-	EIC->BindAction(IA_Sprint, ETriggerEvent::Completed, this, &ThisClass::StopAction, FName(TEXT("Sprint")));
-	EIC->BindAction(IA_PrimaryAttack, ETriggerEvent::Triggered, this, &ThisClass::StartAction, FName(TEXT("MagicProjectile")));
-	EIC->BindAction(IA_BlackholeAttack, ETriggerEvent::Triggered, this, &ThisClass::StartAction, FName(TEXT("BlackholeProjectile")));
-	EIC->BindAction(IA_Teleport, ETriggerEvent::Triggered, this, &ThisClass::StartAction, FName(TEXT("TeleportProjectile")));
+	EIC->BindAction(IA_Sprint, ETriggerEvent::Started, this, &ThisClass::StartAction, RogueGameplayTag::Action_Sprint.GetTag());
+	EIC->BindAction(IA_Sprint, ETriggerEvent::Completed, this, &ThisClass::StopAction, RogueGameplayTag::Action_Sprint.GetTag());
+	
+	EIC->BindAction(IA_PrimaryAttack, ETriggerEvent::Triggered, this, &ThisClass::StartAction, RogueGameplayTag::Action_Projectile_Magic.GetTag());
+	EIC->BindAction(IA_BlackholeAttack, ETriggerEvent::Triggered, this, &ThisClass::StartAction, RogueGameplayTag::Action_Projectile_Blackhole.GetTag());
+	EIC->BindAction(IA_Teleport, ETriggerEvent::Triggered, this, &ThisClass::StartAction, RogueGameplayTag::Action_Projectile_Teleport.GetTag());
 }
 
 void ARoguePlayerCharacter::Move(const FInputActionValue& InValue)
@@ -68,12 +71,12 @@ void ARoguePlayerCharacter::Look(const FInputActionInstance& InInstance)
 	AddControllerPitchInput(Value.Y);
 }
 
-void ARoguePlayerCharacter::StartAction(FName ActionName)
+void ARoguePlayerCharacter::StartAction(FGameplayTag ActionName)
 {
 	ActionSystemComp->StartAction(ActionName);
 }
 
-void ARoguePlayerCharacter::StopAction(FName ActionName)
+void ARoguePlayerCharacter::StopAction(FGameplayTag ActionName)
 {
 	ActionSystemComp->StopAction(ActionName);
 }

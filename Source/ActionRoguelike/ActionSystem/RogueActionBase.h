@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include "CoreMinimal.h"
+#include "GameplayTagContainer.h"
 #include "UObject/Object.h"
 #include "RogueActionBase.generated.h"
 
@@ -14,7 +15,7 @@ class ACTIONROGUELIKE_API URogueActionBase : public UObject
 	
 protected:
 	UPROPERTY(EditDefaultsOnly, Category=Action)
-	FName ActionName;
+	FGameplayTag ActionName;
 	
 	UPROPERTY(EditDefaultsOnly, Category=Action)
 	float CooldownTime = 0.f;
@@ -43,5 +44,5 @@ public:
 	bool CanStop() const;
 	bool IsRunning() const { return bIsRunning; }
 	float GetCooldownRemaining() const;
-	FName GetActionName() const { return ActionName; }
+	FGameplayTag GetActionName() const { return ActionName; }
 };
