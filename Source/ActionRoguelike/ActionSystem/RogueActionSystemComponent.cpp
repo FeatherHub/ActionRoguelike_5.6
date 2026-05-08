@@ -88,7 +88,12 @@ void URogueActionSystemComponent::StopAction(FGameplayTag ActionName)
 bool URogueActionSystemComponent::ApplyAttributeChange(FGameplayTag AttributeTag, float InValue, EAttributeChangeType ChangeType)
 {
 	FRogueAttribute* Attribute = GetAttribute(AttributeTag);
-
+	if (!Attribute)
+	{
+		return false;
+	}
+	
+	
 	float OldValue = Attribute->GetValue();
 	
 	switch (ChangeType) {
@@ -153,13 +158,29 @@ FOnAttributeChanged& URogueActionSystemComponent::GetOnAttributeChangedListener(
 
 FRogueAttribute* URogueActionSystemComponent::GetAttribute(FGameplayTag AttributeTag) const
 {
-	return *CachedAttributeMap.Find(AttributeTag);
+	FRogueAttribute* const* FoundAttribute = CachedAttributeMap.Find(AttributeTag);
+	
+	if (FoundAttribute)
+	{
+		return *FoundAttribute;
+	}
+	
+	UE_LOG(LogTemp, Warning, TEXT("Attribute %s not found on %s's ActionSystemComponent")
+		, *AttributeTag.ToString(), *GetNameSafe(GetOuter()));
+	
+	return nullptr;
 }
 
 float URogueActionSystemComponent::GetAttributeValue(FGameplayTag AttributeTag) const
 {
 	FRogueAttribute* Attribute = GetAttribute(AttributeTag);
-	return Attribute->GetValue();
+	if (Attribute)
+	{
+		return Attribute->GetValue();
+	}
+	
+	ensure(false);
+	return 0.f;
 }
 
 void URogueActionSystemComponent::AddOnAttributeChangedListener_Dynamic(FGameplayTag AttributeTag, FOnAttributeChanged_Dynamic OnAttributeChanged)
