@@ -12,8 +12,13 @@ struct FRogueAttribute
 {
 	GENERATED_BODY()
 	
+	UPROPERTY(EditAnywhere)
 	float Base = 0.f;
+	
+	UPROPERTY(VisibleAnywhere)
 	float Modifier = 0.f;
+
+	UPROPERTY(VisibleAnywhere)
 	float Multiplier = 1.f;
 	
 	float GetValue() const
@@ -23,7 +28,7 @@ struct FRogueAttribute
 };
 
 
-UCLASS()
+UCLASS(EditInlineNew)
 class ACTIONROGUELIKE_API URogueAttributeSet : public UObject
 {
 	GENERATED_BODY()
@@ -43,10 +48,10 @@ class ACTIONROGUELIKE_API URogueHealthAttributeSet : public URogueAttributeSet
 	GENERATED_BODY()
 
 protected:
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, Category=Health)
 	FRogueAttribute Health;
 
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, Category=Health)
 	FRogueAttribute HealthMax;
 	
 public:
@@ -60,7 +65,7 @@ class URogueCharacterAttributeSet : public URogueHealthAttributeSet
 	GENERATED_BODY()
 
 protected:
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, Category=MoveSpeed)
 	FRogueAttribute MoveSpeed;
 	
 public:
@@ -78,7 +83,7 @@ class URoguePlayerAttributeSet : public URogueCharacterAttributeSet
 	GENERATED_BODY()
 
 protected:
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, Category=Rage)
 	FRogueAttribute RageAmount;
 	
 public:

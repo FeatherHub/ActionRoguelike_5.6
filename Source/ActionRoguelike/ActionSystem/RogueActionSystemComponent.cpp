@@ -7,8 +7,6 @@
 URogueActionSystemComponent::URogueActionSystemComponent()
 {
 	bWantsInitializeComponent = true;
-	
-	AttributeSetClass = URogueAttributeSet::StaticClass();
 }
 
 void URogueActionSystemComponent::InitializeComponent()
@@ -24,9 +22,12 @@ void URogueActionSystemComponent::InitializeComponent()
 		}
 	}
 	
-	AttributeSet = NewObject<URogueAttributeSet>(this, AttributeSetClass);
+	if (!AttributeSet)
+	{
+		AttributeSet = NewObject<URogueAttributeSet>(this);
+	}
 	
-	for (TFieldIterator<FProperty> PropertyIt(AttributeSetClass); PropertyIt; ++PropertyIt)
+	for (TFieldIterator<FProperty> PropertyIt(AttributeSet->GetClass()); PropertyIt; ++PropertyIt)
 	{
 		FProperty* Property = *PropertyIt;
 		
@@ -37,6 +38,13 @@ void URogueActionSystemComponent::InitializeComponent()
 		
 		CachedAttributeMap.Add(AttributeTag, Attribute);
 	}
+}
+
+void URogueActionSystemComponent::SetDefaultAttributeSet(TSubclassOf<URogueAttributeSet> AttributeSetClass)
+{
+	FObjectInitializer& ObjectInitializer = FObjectInitializer::Get();
+	
+	AttributeSet = Cast<URogueAttributeSet>(ObjectInitializer.CreateDefaultSubobject(this, TEXT("AttributeSet"), AttributeSetClass, AttributeSetClass));
 }
 
 void URogueActionSystemComponent::BeginPlay()

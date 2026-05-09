@@ -5,6 +5,7 @@
 #include "EnhancedInputComponent.h"
 #include "GameplayTagContainer.h"
 #include "ActionSystem/RogueActionSystemComponent.h"
+#include "ActionSystem/RogueAttributeSet.h"
 #include "Core/RogueGameplayTag.h"
 #include "GameFramework/PawnMovementComponent.h"
 
@@ -13,6 +14,7 @@ ARoguePlayerCharacter::ARoguePlayerCharacter()
 	PrimaryActorTick.bCanEverTick = true;
 
 	ActionSystemComp = CreateDefaultSubobject<URogueActionSystemComponent>(TEXT("ActionSystemComp"));
+	ActionSystemComp->SetDefaultAttributeSet(URoguePlayerAttributeSet::StaticClass());
 	
 	SpringArmComp = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArmComp"));
 	SpringArmComp->SetupAttachment(RootComponent);

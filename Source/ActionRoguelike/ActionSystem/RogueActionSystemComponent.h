@@ -41,12 +41,9 @@ protected:
 	UPROPERTY(EditAnywhere, Category=Action)
 	TArray<TObjectPtr<URogueActionBase>> GrantedActions;
 
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, Instanced, Category=Attribute)
 	TObjectPtr<URogueAttributeSet> AttributeSet;
 
-	UPROPERTY(EditDefaultsOnly, Category=Attribute)
-	TSubclassOf<URogueAttributeSet> AttributeSetClass;
-	
 	TMap<FGameplayTag, FRogueAttribute*> CachedAttributeMap;
 	
 	TMap<FGameplayTag, FOnAttributeChanged> OnAttributeChangedListeners;
@@ -62,9 +59,9 @@ public:
 	void StopAction(FGameplayTag ActionName);
 	void GrantAction(URogueActionBase* Action);
 	
-	FOnAttributeChanged& GetOnAttributeChangedListener(FGameplayTag AttributeTag);
-	
+	void SetDefaultAttributeSet(TSubclassOf<URogueAttributeSet> AttributeSetClass);
 	FRogueAttribute* GetAttribute(FGameplayTag AttributeTag) const;
+	FOnAttributeChanged& GetOnAttributeChangedListener(FGameplayTag AttributeTag);
 
 	UFUNCTION(BlueprintCallable)
 	float GetAttributeValue(FGameplayTag AttributeTag) const;
