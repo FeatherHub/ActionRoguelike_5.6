@@ -57,6 +57,9 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category=Action)
 	float DamagePerRageRatio; /* e.g. 1 Damanage => 5 Rage */
 	
+	UPROPERTY(EditDefaultsOnly, Category=Pickup)
+	int32 PickupRadius;
+	
 protected:
 	void Move(const FInputActionValue& InValue);
 	void Look(const FInputActionInstance& InInstance);
@@ -72,6 +75,7 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
 	
+	float GetPickupRadius() const { return PickupRadius; }
 protected:
 	FTimerHandle TimerHandle_HitFlashOverlay;
 };

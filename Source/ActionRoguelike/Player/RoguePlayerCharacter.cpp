@@ -25,6 +25,8 @@ ARoguePlayerCharacter::ARoguePlayerCharacter()
 	JumpMaxCount = 2;
 	
 	DamagePerRageRatio = 5.f;
+	
+	PickupRadius = 128.f;
 }
 
 
