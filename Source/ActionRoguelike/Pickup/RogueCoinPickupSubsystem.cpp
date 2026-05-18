@@ -7,10 +7,14 @@
 #include "Components/InstancedStaticMeshComponent.h"
 #include "Core/RoguePickupSystemSetting.h"
 #include "Player/RoguePlayerCharacter.h"
+#include "ProfilingDebugging/CountersTrace.h"
 
+TRACE_DECLARE_INT_COUNTER(TotalCoinCount, TEXT("TotalCoinCount"));
 
 void URogueCoinPickupSubsystem::OnWorldBeginPlay(UWorld& InWorld)
 {
+	TRACE_COUNTER_SET(TotalCoinCount, 0);
+	
 	Super::OnWorldBeginPlay(InWorld);
 	
 	UWorld* World = GetWorld();
@@ -21,6 +25,7 @@ void URogueCoinPickupSubsystem::OnWorldBeginPlay(UWorld& InWorld)
 
 	CoinPickupAudioComp = NewObject<UAudioComponent>(World, NAME_None, RF_Transient);
 	CoinPickupAudioComp->SetAutoActivate(false);
+	CoinPickupAudioComp->bAllowSpatialization = false;
 	CoinPickupAudioComp->RegisterComponentWithWorld(World);
 
 	const URoguePickupSystemSetting* PickupSystemSetting = GetDefault<URoguePickupSystemSetting>();
@@ -58,24 +63,32 @@ void URogueCoinPickupSubsystem::Tick(float DeltaTime)
 
 
 	TArray<int32> PickedCoinIndicies;
-	for (int i = 0; i < CoinLocations.Num(); ++i)
 	{
-		float DistTo = FVector::Dist(PlayerLocation, CoinLocations[i]);
-		if (DistTo < PickupRadius)
+		TRACE_CPUPROFILER_EVENT_SCOPE(URogueCoinPickupSubsystem::Tick::DistanceCheck);
+		for (int i = 0; i < CoinLocations.Num(); ++i)
 		{
-			PickedCoinIndicies.Add(i);
+			float DistTo = FVector::Dist(PlayerLocation, CoinLocations[i]);
+			if (DistTo < PickupRadius)
+			{
+				PickedCoinIndicies.Add(i);
+			}
 		}
 	}
 
 
 	int32 TotalCoinCreditToGrant = 0.f;
-	for (int i = PickedCoinIndicies.Num() - 1; i >= 0; --i)
-	{
-		int32 PickedCoinIndex = PickedCoinIndicies[i];
-		
-		TotalCoinCreditToGrant += CoinCredits[PickedCoinIndex];
 
-		RemoveCoin(PickedCoinIndex);
+	{
+		TRACE_CPUPROFILER_EVENT_SCOPE(URogueCoinPickupSubsystem::Tick::PickupCoins);
+		
+		for (int i = PickedCoinIndicies.Num() - 1; i >= 0; --i)
+		{
+			int32 PickedCoinIndex = PickedCoinIndicies[i];
+			
+			TotalCoinCreditToGrant += CoinCredits[PickedCoinIndex];
+
+			RemoveCoin(PickedCoinIndex);
+		}
 	}
 
 	
@@ -129,6 +142,8 @@ void URogueCoinPickupSubsystem::AddCoins(const TArray<FVector>& NewCoinLocations
 	CoinLocations.Append(NewCoinLocations);
 	CoinCredits.Append(NewCoinCredits);
 	CoinMeshInstanceIds.Append(NewCoinInstanceIds);
+	
+	TRACE_COUNTER_SET(TotalCoinCount, CoinLocations.Num());
 }
 
 void URogueCoinPickupSubsystem::RemoveCoin(int32 CoinIndex)
@@ -138,4 +153,6 @@ void URogueCoinPickupSubsystem::RemoveCoin(int32 CoinIndex)
 	
 	CoinISMComp->RemoveInstanceById(CoinMeshInstanceIds[CoinIndex]);
 	CoinMeshInstanceIds.RemoveAt(CoinIndex);
+	
+	TRACE_COUNTER_SET(TotalCoinCount, CoinLocations.Num());
 }
