@@ -57,7 +57,11 @@ public:
 	
 	void StartAction(FGameplayTag ActionName);
 	void StopAction(FGameplayTag ActionName);
-	void GrantAction(URogueActionBase* Action);
+	
+	UFUNCTION(BlueprintCallable)
+	void GrantAction(TSubclassOf<URogueActionBase> ActionClass);
+
+	void RemoveAction(URogueActionBase* Action);
 	
 	void SetDefaultAttributeSet(TSubclassOf<URogueAttributeSet> AttributeSetClass);
 	FRogueAttribute* GetAttribute(FGameplayTag AttributeTag) const;

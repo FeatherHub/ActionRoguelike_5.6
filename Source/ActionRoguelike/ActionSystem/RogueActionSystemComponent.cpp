@@ -3,6 +3,7 @@
 #include "ActionRoguelike.h"
 #include "RogueActionBase.h"
 #include "GameplayTagContainer.h"
+#include "RogueActionEffect.h"
 #include "RogueAttributeSet.h"
 
 URogueActionSystemComponent::URogueActionSystemComponent()
@@ -14,15 +15,18 @@ void URogueActionSystemComponent::InitializeComponent()
 {
 	Super::InitializeComponent();
 
+	///////////////
+	// Action
 	for (TSubclassOf<URogueActionBase> ActionClass : DefaultGrantActions)
 	{
 		if (ActionClass)
 		{
-			URogueActionBase* NewAction = NewObject<URogueActionBase>(this, ActionClass);
-			GrantAction(NewAction);
+			GrantAction(ActionClass);
 		}
 	}
 	
+	///////////////
+	// Attribute
 	if (!AttributeSet)
 	{
 		AttributeSet = NewObject<URogueAttributeSet>(this);
@@ -55,9 +59,23 @@ void URogueActionSystemComponent::BeginPlay()
 	AttributeSet->PostInitializeComponents();
 }
 
-void URogueActionSystemComponent::GrantAction(URogueActionBase* Action)
+void URogueActionSystemComponent::GrantAction(TSubclassOf<URogueActionBase> ActionClass)
 {
-	GrantedActions.Add(Action);
+	URogueActionBase* NewAction = NewObject<URogueActionBase>(this, ActionClass);
+	
+	GrantedActions.Add(NewAction);
+	
+	if (NewAction->IsA(URogueActionEffect::StaticClass()))
+	{
+		ensureMsgf(NewAction->CanStart(), TEXT("Effect CanStart returns FALSE"));
+		NewAction->StartAction();
+	}
+}
+
+void URogueActionSystemComponent::RemoveAction(URogueActionBase* Action)
+{
+	int32 RemoveCount = GrantedActions.RemoveSingle(Action);
+	ensure(RemoveCount == 1);
 }
 
 void URogueActionSystemComponent::StartAction(FGameplayTag ActionName)
